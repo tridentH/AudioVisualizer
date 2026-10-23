@@ -39,11 +39,11 @@ export class AudioEngine {
     if (this.context.state !== 'running') throw new Error('Audio is suspended. Press play to enable sound in your browser.');
   }
   async load(file: File) {
-    const id = ++this.requestId;
     if (!/\.(mp3|wav|ogg|m4a|aac|flac|webm|opus)$/i.test(file.name) && !file.type.startsWith('audio/')) {
       this.emit({ error: 'Choose an audio file such as MP3, WAV, or OGG.' }); return;
     }
     if (file.size > 150 * 1024 * 1024) { this.emit({ error: 'Please choose a file smaller than 150 MB.' }); return; }
+    const id = ++this.requestId;
     this.pause(); this.emit({ loading: true, error: '' });
     try {
       await this.initialize();

@@ -1,12 +1,13 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { lazy, Suspense, useCallback, useEffect, useRef, useState } from 'react';
 import { Activity, ArrowDownToLine, ArrowUpRight, AudioLines, Check, ChevronRight, CircleHelp, Disc3, Expand, Github, Globe2, Layers3, LoaderCircle, Maximize2, Minimize2, Orbit, Play, ShieldCheck, SlidersHorizontal, Sparkles, Upload, Waves, X } from 'lucide-react';
 import { useAudioEngine } from './hooks/useAudioEngine';
 import AudioPlayer from './components/AudioPlayer';
 import AudioMeter from './components/AudioMeter';
 import ControlPanel from './components/ControlPanel';
-import VisualizerCanvas from './components/VisualizerCanvas';
 import { readSettings } from './types';
 import type { Mode, Settings } from './types';
+
+const VisualizerCanvas = lazy(() => import('./components/VisualizerCanvas'));
 
 const modes = [
   { id: 'galaxy' as const, name: 'Particle Galaxy', icon: Orbit, caption: 'A universe in every frequency.', number: '01', detail: 'Bass expands the arms. Mids bend the stars. Highs bring the sparkle.' },
@@ -43,10 +44,10 @@ export default function App() {
   }, []);
   useEffect(() => {
     const key = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setPanel(false);
       if ((event.target as HTMLElement).closest('input, select, textarea, button, a, dialog') || event.metaKey || event.ctrlKey || event.altKey) return;
       if (event.code === 'Space') { event.preventDefault(); state.playing ? engine.pause() : void engine.play(); }
       if (event.key.toLowerCase() === 'f') void toggleFullscreen();
-      if (event.key === 'Escape') setPanel(false);
       if (['1', '2', '3'].includes(event.key)) setMode(modes[+event.key - 1].id);
     };
     window.addEventListener('keydown', key); return () => window.removeEventListener('keydown', key);
@@ -66,7 +67,7 @@ export default function App() {
           onDragOver={e => e.preventDefault()} onDragLeave={e => { e.preventDefault(); if (--dragDepth.current <= 0) setDragging(false); }}
           onDrop={e => { e.preventDefault(); dragDepth.current = 0; setDragging(false); const file = e.dataTransfer.files[0]; if (file) void engine.load(file); }}>
           <div className="stage-stars" aria-hidden="true" /><div className="stage-glow" aria-hidden="true" />
-          <div className="canvas-wrap"><VisualizerCanvas engine={engine} settings={settings} preview={!state.name} mode={mode} /></div>
+          <div className="canvas-wrap"><Suspense fallback={<div className="graphics-error">Opening your universe…</div>}><VisualizerCanvas engine={engine} settings={settings} preview={!state.name} mode={mode} /></Suspense></div>
           <div className="stage-top"><span className="scene-tag"><span className={`status-dot ${state.playing ? 'live' : ''}`} />{state.playing ? 'AUDIO REACTIVE' : state.name ? 'PAUSED' : 'EXPLORATION MODE'}</span><div className="stage-top-right"><span className="quality-tag"><Layers3 size={12} />{settings.quality} quality</span><button className="icon-button" onClick={() => void toggleFullscreen()} aria-label={fullscreen ? 'Exit fullscreen' : 'Enter fullscreen'} title="Fullscreen (F)">{fullscreen ? <Minimize2 size={16} /> : <Maximize2 size={16} />}</button></div></div>
           {!state.name && <div className="welcome"><div className="welcome-symbol"><Disc3 size={26} strokeWidth={1.4} /><span><Sparkles size={11} /></span></div><div className="eyebrow welcome-eyebrow">PRESS PLAY ON A NEW PERSPECTIVE</div><h2>Your music.<br />Another dimension.</h2><p>Drop a track and watch your sound<br className="desktop-break" /> become something you can see.</p><button className="primary-button" onClick={upload} disabled={state.loading}>{state.loading ? <LoaderCircle size={16} className="spin" /> : <Upload size={16} />}{state.loading ? 'Opening audio…' : 'Choose audio file'}<ArrowUpRight size={16} /></button><button className="demo-button" onClick={() => void engine.demo()} disabled={state.loading}><Play size={12} fill="currentColor" /> Or explore the demo <ChevronRight size={13} /></button><span className="file-hint">MP3, WAV, OGG & more · up to 150 MB</span></div>}
           {state.name && <button className="replace-track" onClick={upload}><Upload size={14} /> Drop or choose another track</button>}

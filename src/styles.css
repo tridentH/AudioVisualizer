@@ -97,11 +97,11 @@ h1 > span { color: #8e8b9d; }
 .play-button > svg.lucide-play { margin-left: 2px; }
 .seek-control { display: flex; align-items: center; gap: 12px; flex: 1 1 220px; max-width: 440px; margin-left: 9px; }
 .seek-control > span { font-family: ui-monospace, monospace; font-size: 9px; color: #817a91; }
-input[type=range] { appearance: none; -webkit-appearance: none; background: #33303f; height: 3px; border-radius: 3px; width: 100%; cursor: pointer; accent-color: #c3a8f1; }
+input[type=range] { appearance: none; -webkit-appearance: none; background: linear-gradient(#33303f, #33303f) center / 100% 3px no-repeat; height: 18px; border-radius: 3px; width: 100%; cursor: pointer; accent-color: #c3a8f1; }
 input[type=range]::-webkit-slider-thumb { appearance: none; height: 8px; width: 8px; border-radius: 50%; background: #cbb1f4; box-shadow: 0 0 6px #cbb1f422; }
 input[type=range]::-moz-range-thumb { height: 8px; width: 8px; border-radius: 50%; border: 0; background: #cbb1f4; }
 input[type=range]:disabled { opacity: .35; cursor: default; }
-.seek-control input { background: linear-gradient(to right, #b79bdc var(--progress), #33303f var(--progress)); }
+.seek-control input { background: linear-gradient(to right, #b79bdc var(--progress), #33303f var(--progress)) center / 100% 3px no-repeat; }
 .volume-control { display: flex; align-items: center; gap: 8px; border-left: 1px solid #ffffff0b; padding-left: 10px; margin-left: 8px; width: 126px; flex: 0 0 auto; }
 .volume-control input { width: 70px; }
 .player-upload { margin-left: 8px; }
